@@ -6,3 +6,5 @@ const todoSchema = new mongoose.Schema({
    
 });
 module.exports = mongoose.model("Todo", todoSchema);
+console.log("Todo Schema Created"); 
+console.log("Todo Model Exported");
