@@ -18,7 +18,7 @@ mongoose.connect("mongodb+srv://athuljaison005:athuljaison@cluster0.chwfgbs.mong
 .catch(err => console.error("❌ Database connection error:", err));
 
 // Routes
-const itemRoutes = require("./routes/TodoRoutes");
+const itemRoutes = require("./Routes/TodoRoutes");
 app.use("/api/items", itemRoutes); // ✅ Ensure correct API route
 
 // Start server
