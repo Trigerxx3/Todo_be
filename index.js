@@ -1,25 +1,27 @@
-
-
 const express = require("express");
-
-
 const mongoose = require("mongoose");
 const cors = require("cors");
 
 const app = express();
 const PORT = 3000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
-// Connect to MongoDB
-mongoose.connect("mongodb+srv://athuljaison005:athuljaison@cluster0.chwfgbs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
-}).then(() => console.log(" Connected to MongoDB"))
-  .catch(err => console.error(" Database connection error:", err));
 
- const itemRoutes = require("./Routes/TodoRoutes");
- app.use("/itemRoutes",itemRoutes );
+// MongoDB Connection
+mongoose.connect("mongodb+srv://athuljaison005:athuljaison@cluster0.chwfgbs.mongodb.net/todoDB?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("✅ Connected to MongoDB"))
+.catch(err => console.error("❌ Database connection error:", err));
+
+// Routes
+const itemRoutes = require("./routes/todoRoutes");
+app.use("/api/items", itemRoutes); // ✅ Ensure correct API route
 
 // Start server
 app.listen(PORT, () => {
-    console.log(` Server running at http://localhost:${PORT}`);
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

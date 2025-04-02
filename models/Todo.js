@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
 const todoSchema = new mongoose.Schema({
-    data: { type: String },
-    Date: { type: Date },
-   
+  data: { type: String, required: true },
+  completed: { type: Boolean, default: false },
+  date: { type: Date, default: Date.now }
 });
+
 module.exports = mongoose.model("Todo", todoSchema);
-console.log("Todo Schema Created"); 
-console.log("Todo Model Exported");
