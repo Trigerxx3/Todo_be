@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Todo = require("../models/Todo"); // ✅ Ensure correct model path
+const Todo = require("../models/todoModel"); // Updated import
 
 // GET all tasks
 router.get("/", async (req, res) => {
@@ -14,15 +14,22 @@ router.get("/", async (req, res) => {
 
 // POST a new task
 router.post("/", async (req, res) => {
-    const newTodo = new Todo({
-        task: req.body.task,
-        completed: false,
-    });
-
     try {
+        // Validate required fields
+        if (!req.body.data) {
+            return res.status(400).json({ message: "Task data is required" });
+        }
+
+        const newTodo = new Todo({
+            data: req.body.data,
+            completed: false,
+            dueDate: req.body.dueDate || null
+        });
+
         const savedTodo = await newTodo.save();
         res.status(201).json(savedTodo);
     } catch (err) {
+        console.error("Error saving task:", err);
         res.status(400).json({ message: err.message });
     }
 });
@@ -32,7 +39,11 @@ router.put("/:id", async (req, res) => {
     try {
         const updatedTodo = await Todo.findByIdAndUpdate(
             req.params.id,
-            { completed: req.body.completed },
+            { 
+                completed: req.body.completed,
+                data: req.body.data,
+                dueDate: req.body.dueDate 
+            },
             { new: true }
         );
         res.json(updatedTodo);

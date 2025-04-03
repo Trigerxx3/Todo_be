@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 // Define the schema for todo items
-const todoSchema = new mongoose.Schema({
-    text: {
+const TodoSchema = new mongoose.Schema({
+    data: {
         type: String,
         required: true
     },
@@ -21,6 +21,6 @@ const todoSchema = new mongoose.Schema({
 });
 
 // Create and export the model
-module.exports = mongoose.model('Task', todoSchema); 
+module.exports = mongoose.model('Todo', TodoSchema); 
 
 
