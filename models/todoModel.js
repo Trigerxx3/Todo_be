@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 // Define the schema for todo items
 const TodoSchema = new mongoose.Schema({
-    data: {
+    title: {
         type: String,
         required: true
     },
