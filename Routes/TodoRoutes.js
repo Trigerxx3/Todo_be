@@ -1,81 +1,54 @@
 const express = require("express");
 const router = express.Router();
-const Task = require("../models/todoModel"); // Ensure correct model import
+const Todo = require("../models/Todo"); // ✅ Ensure correct model path
 
-// GET All Tasks
+// GET all tasks
 router.get("/", async (req, res) => {
-  try {
-    const tasks = await Task.find();
-    res.status(200).json(tasks);
-  } catch (error) {
-    res.status(500).json({ error: "Server error fetching tasks" });
-  }
+    try {
+        const todos = await Todo.find();
+        res.json(todos);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
-// ADD a New Task
+// POST a new task
 router.post("/", async (req, res) => {
-  try {
-    const { data } = req.body;
-    if (!data) return res.status(400).json({ error: "Task content is required" });
+    const newTodo = new Todo({
+        task: req.body.task,
+        completed: false,
+    });
 
-    const newTask = new Task({ text: data, completed: false });
-    await newTask.save();
-
-    res.status(201).json(newTask);
-  } catch (error) {
-    res.status(500).json({ error: "Server error adding task" });
-  }
+    try {
+        const savedTodo = await newTodo.save();
+        res.status(201).json(savedTodo);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 });
 
-// DELETE Task by ID
+// PUT (Update task)
+router.put("/:id", async (req, res) => {
+    try {
+        const updatedTodo = await Todo.findByIdAndUpdate(
+            req.params.id,
+            { completed: req.body.completed },
+            { new: true }
+        );
+        res.json(updatedTodo);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// DELETE task
 router.delete("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    console.log(`🟡 Deleting task with ID: ${id}`); // Debugging
-
-    const deletedTask = await Task.findByIdAndDelete(id); // ✅ Correct MongoDB ID lookup
-    if (!deletedTask) {
-        console.error("❌ Task not found for ID:", id); // Debugging log for missing task
+    try {
+        await Todo.findByIdAndDelete(req.params.id);
+        res.json({ message: "Task deleted" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-
-    if (!deletedTask) {
-        console.error("❌ Task not found for ID:", id); // Debugging log for missing task
-    }
-
-
-    if (!deletedTask) {
-      return res.status(404).json({ error: "Task not found" }); // ✅ Handle non-existing task
-    }
-
-    console.log("✅ Task deleted:", deletedTask); // Debugging
-    res.status(200).json({ message: "Task deleted successfully", deletedTask });
-
-  } catch (error) {
-    console.error("❌ Error deleting task:", error);
-    res.status(500).json({ error: "Server error during deletion", details: error.message }); // More specific error message
-
-    res.status(500).json({ error: "Server error during deletion", details: error.message }); // More specific error message
-
-    res.status(500).json({ error: "Server error" });
-  }
 });
 
-// EDIT Task by ID
-router.put("/edit/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { data } = req.body;
-
-    if (!data) return res.status(400).json({ error: "Updated task text is required" });
-
-    const updatedTask = await Task.findByIdAndUpdate(id, { text: data }, { new: true });
-
-    if (!updatedTask) {
-      return res.status(404).json({ error: "Task not found" });
-    }
-
-    res.status(200).json(updatedTask);
-  } catch (error) {
-    res.status(500).json({ error: "Server error updating task" });
-  }
-});
+module.exports = router; // ✅ Correct export
