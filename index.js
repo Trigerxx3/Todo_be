@@ -9,27 +9,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect("mongodb://localhost:27017/todoapp", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log("✅ Connected to MongoDB"))
-.catch((err) => console.error("❌ MongoDB connection error:", err));
+// ✅ Connect to MongoDB Atlas
+mongoose.connect("mongodb+srv://athuljaison005:athuljaison@cluster0.chwfgbs.mongodb.net/todoapp?retryWrites=true&w=majority")
+  .then(() => {
+    console.log("✅ Connected to MongoDB Atlas successfully");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
+  });
 
 // Routes
 app.use("/api/items", todoRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error("❌ Error:", err.stack);
-    res.status(500).json({ message: "Something went wrong!" });
+  console.error("❌ Server Error:", err);
+  res.status(500).json({
+    error: "Internal Server Error",
+    message: err.message,
+  });
 });
 
-// Port configuration
-const PORT = process.env.PORT || 3000;
-
-// Start server
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
